@@ -32,7 +32,6 @@ Imageloader = (function() {
 
 
         _.init = function() {
-            console.log('init');
             if (options === undefined) {
                 options = {};
             }
@@ -75,7 +74,6 @@ Imageloader = (function() {
             Image Events
         */
         _.loaded = function(e) {
-            console.log('loaded: ' + e.target.src);
             var element = e.target;
             var key = Array.prototype.slice.call(_.imageElements).indexOf(element);
 
