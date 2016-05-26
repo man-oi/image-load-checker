@@ -37,6 +37,7 @@ gulp.task('clean-demo', function () {
 // dist
 gulp.task('js-dist', ['clean-js-dist'], function() {
     gulp.src(gulpConf.src + '/js/imageloader.js')
+        .pipe(gulp.dest(gulpConf.dist + '/scripts/'))
         .pipe(uglify({
             mangle: true,
             compress: {
