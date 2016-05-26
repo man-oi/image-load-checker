@@ -1,14 +1,13 @@
+'use strict'
+
 var imagesloaded = function(args) {
+    this.imageElements = null;
+    this.loadedImages = 0;
+    this.errorImages = 0;
+    this.timeoutFunctions = [];
 
-    console.log('start');
-
-    var imageElements       = null,
-        loadedImages        = 0,
-        errorImages         = 0,
-        timeoutFunctions    = [],
-
-    defaults = {
-        imageSelector   : 'img',    
+    this.defaults = {
+        imageSelector   : 'img',
         timeoutTime     : 1000 * 60,
 
         imageLoaded     : function(element) {
@@ -19,44 +18,40 @@ var imagesloaded = function(args) {
         },
         imageTimeout    : function(element) {}
     },
+    this.options = {},
 
-    options = {},
-
-    init    =   function() {
-        console.log('init');
-        
+    this.init    =   function() {
         if (args === undefined) {
             args = {};
         }
-        options = extend(options, defaults, args);
+        this.options = this.extend(this.options, this.defaults, args);
 
-        imageElements = document.querySelectorAll(options.imageSelector);
-        
-        bindEvents();
+        this.imageElements = document.querySelectorAll(this.options.imageSelector);
+
+        this.bindEvents();
     },
 
-    bindEvents = function() {
-        console.log('bind');
+    this.bindEvents = function() {
         var event = document.createEvent("HTMLEvents");
-        
-        for (var i = 0; i < imageElements.length; i++) {
-            imageElements[i].addEventListener('load', loaded);
-            imageElements[i].addEventListener('error', error);
 
-            timeoutFunctions[i] = window.setTimeout(function(i) {
-                timeout(imageElements[i])
-            }, options.timeoutTime, i);
+        for (var i = 0; i < this.imageElements.length; i++) {
+            this.imageElements[i].addEventListener('load', this.loaded.bind(this));
+            this.imageElements[i].addEventListener('error', this.error.bind(this));
 
-            if (imageElements[i].complete) {
-                if (imageElements[i].naturalWidth  === 0) {
+            this.timeoutFunctions[i] = window.setTimeout(function(i) {
+                this.timeout(this.imageElements[i])
+            }, this.options.timeoutTime, i);
+
+            if (this.imageElements[i].complete) {
+                if (this.imageElements[i].naturalWidth  === 0) {
                     event.initEvent("error", true, true);
                 }
                 else {
                     event.initEvent("load", true, true);
                 }
 
-                imageElements[i].dispatchEvent(event);
-            }            
+                this.imageElements[i].dispatchEvent(event);
+            }
         }
     },
 
@@ -64,75 +59,74 @@ var imagesloaded = function(args) {
     /*
         Image Events
     */
-    loaded = function(e) {
-        console.log('loaded: ' + e.target.src);
+    this.loaded = function(e) {
+        //console.log('loaded: ' + e.target.src);
         var element = e.target;
-        var key = Array.prototype.slice.call(imageElements).indexOf(element);
-        
-        window.clearTimeout(timeoutFunctions[key]);
-        element.removeEventListener('load', loaded);
-        loadedImages++;
-        
-        options.imageLoaded(element);
-        
-        if (loadedImages + errorImages === imageElements.length) {
-            if (loadedImages === imageElements.length) {
-                allLoaded();
+        var key = Array.prototype.slice.call(this.imageElements).indexOf(element);
+
+        window.clearTimeout(this.timeoutFunctions[key]);
+        element.removeEventListener('load', this.loaded);
+        this.loadedImages++;
+
+        this.options.imageLoaded(element);
+
+        if (this.loadedImages + this.errorImages === this.imageElements.length) {
+            if (this.loadedImages === this.imageElements.length) {
+                this.allLoaded();
             }
             else {
-                notAllLoaded();
+                this.notAllLoaded();
             }
         }
     },
 
-    error = function(e) {
-        console.log('error');
+    this.error = function(e) {
         var element = e.target;
-        var key = Array.prototype.slice.call(imageElements).indexOf(element);
+        var key = Array.prototype.slice.call(this.imageElements).indexOf(element);
 
-        window.clearTimeout(timeoutFunctions[key]);
-        element.removeEventListener('error', error);
-        errorImages++;
-        
-        options.imageError(element);
+        window.clearTimeout(this.timeoutFunctions[key]);
+        element.removeEventListener('error', this.error);
+        this.errorImages++;
 
-        if (loadedImages + errorImages === imageElements.length) {
-            if (errorImages === imageElements.length) {
-                allFails();
+        this.options.imageError(element);
+
+        if (this.loadedImages + this.errorImages === this.imageElements.length) {
+            if (this.errorImages === this.imageElements.length) {
+                this.allFails();
             }
             else {
-                notAllLoaded();
+                this.notAllLoaded();
             }
         }
     },
 
-    timeout = function(element) {
+    this.timeout = function(element) {
         console.log('timeout: ' + element);
 
-        options.imageTimeout(element);
+        this.options.imageTimeout(element);
     },
 
 
     /*
         Collection Events
     */
-    allFails = function() {
+    this.allFails = function() {
         console.log('all fails');
     },
 
-    allLoaded = function() {
+    this.allLoaded = function() {
         console.log('all loaded');
     },
 
-    notAllLoaded = function() {
-        console.log('not all loaded, just ' + loadedImages);
+    this.notAllLoaded = function() {
+        console.log('not all loaded, just ' + this.loadedImages);
     },
 
 
     /*
         Helper Functions
     */
-    extend = function(destination, defaults, options) {   
+    this.extend = function(destination, defaults, options) {
         for (var property in defaults) {
             if (options[property]) {
                 destination[property] = options[property];
@@ -143,7 +137,4 @@ var imagesloaded = function(args) {
         }
         return destination;
     };
-
-
-    init();
 }

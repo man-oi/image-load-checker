@@ -57,7 +57,7 @@ gulp.task('js-dist', ['clean-js-dist'], function() {
 
 // demo
 gulp.task('js-demo', ['clean-js-demo'], function() {
-    gulp.src(gulpConf.srcc + '/js/image-load-checker.js')
+    gulp.src(gulpConf.srcc + '/js/*.js')
         .pipe(gulp.dest(gulpConf.demo + '/scripts/'))
         .pipe(uglify({
             mangle: true,
@@ -116,4 +116,16 @@ gulp.task('sass-demo', ['clean-css-demo'], function() {
     }))
     .on( "error", function( err ) {console.log(err);})
     .pipe(gulp.dest(gulpConf.demo + '/styles/'));
+});
+
+
+
+
+
+
+gulp.task('watch', function() {
+    var watcher = gulp.watch(gulpConf.srcc + '/js/*.js', ['js-demo']);
+    watcher.on('change', function(event) {
+        console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
+    });
 });
