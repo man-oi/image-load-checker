@@ -24,5 +24,8 @@ Imageloader({
     imageError: function(element) {
         element.parentNode.classList.add('error');
     },
-    timeoutTime: 1000
+    imageErrorAfterTimeout: function(element) {
+        element.parentNode.classList.add('error');
+    },
+    timeoutTime: 2000
 });

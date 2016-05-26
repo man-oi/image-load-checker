@@ -17,6 +17,9 @@ Imageloader = (function() {
             imageError: function(element) {
                 element.classList.add('error');
             },
+            imageErrorAfterTimeout: function(element) {
+                element.classList.add('error');
+            },
             imageTimeout: function(element) {}
         };
         _.options = {};
@@ -103,17 +106,22 @@ Imageloader = (function() {
 
             window.clearTimeout(_.timeoutFunctions[key]);
             element.removeEventListener('error', _.error);
-            _.errorImages++;
 
-            _.options.imageError(element);
+            if (!_.timeouts[key]) {
+                _.errorImages++;
+                _.options.imageError(element);
 
-            if (_.loadedImages + _.errorImages + _.timeoutImages === _.imageElements.length) {
-                if (_.errorImages === _.imageElements.length) {
-                    _.allFails();
+                if (_.loadedImages + _.errorImages + _.timeoutImages === _.imageElements.length) {
+                    if (_.errorImages === _.imageElements.length) {
+                        _.allFails();
+                    }
+                    else {
+                        _.notAllLoaded();
+                    }
                 }
-                else {
-                    _.notAllLoaded();
-                }
+            }
+            else {
+                _.options.imageErrorAfterTimeout(element);
             }
         }
 
@@ -121,7 +129,6 @@ Imageloader = (function() {
             var key = Array.prototype.slice.call(_.imageElements).indexOf(element);
 
             _.timeouts[key] = true;
-            element.removeEventListener('error', _.error);
             _.timeoutImages++;
 
             _.options.imageTimeout(element);
