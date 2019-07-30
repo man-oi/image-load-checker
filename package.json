@@ -9,13 +9,15 @@
   "author": "www.manuelbartels.de",
   "license": "ISC",
   "devDependencies": {
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "browser-sync": "^2.26.7",
     "del": "^5.0.0",
     "gulp": "^4.0.2",
-    "gulp-autoprefixer": "^3.1.0",
-    "gulp-cssnano": "^2.1.2",
-    "gulp-imagemin": "^2.3.0",
-    "gulp-rename": "^1.2.2",
-    "gulp-sass": "^2.1.0",
+    "gulp-babel": "^8.0.0",
     "gulp-uglify": "^3.0.2"
+  },
+  "dependencies": {
+    "gulp-htmlmin": "^5.0.1"
   }
 }

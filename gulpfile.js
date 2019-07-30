@@ -1,56 +1,79 @@
 const gulp = require('gulp');
-const uglify = require('gulp-uglify');
-const rename = require('gulp-rename');
+const babel = require('gulp-babel');
+const htmlmin = require('gulp-htmlmin');
 
+const browserSync = require('browser-sync');
 const del = require('del');
 
 const gulpConf = {
-    src: 'src',
-    dist: 'dist'
+  src: 'src',
+  dist: 'dist'
 }
 
 
 
 /***
-    CLEAN DIRECTORIES
+    CLEAN
 ***/
-gulp.task('clean-js-dist', function () {
-    del(gulpConf.dist);
-});
-
-
-
-/***
-    JAVASCRIPT
-***/
-
-// dist
-gulp.task('js-dist', ['clean-js-dist'], function() {
-    gulp.src(gulpConf.src + '/js/imageloader.js')
-        .pipe(gulp.dest(gulpConf.dist + '/scripts/'))
-        .pipe(uglify({
-            mangle: true,
-            compress: {
-                drop_console: true
-            }
-        }))
-        .on( "error", function( err ) {console.log(err);})
-        .pipe(rename({
-            suffix  : '.min'
-        }))
-        .pipe(gulp.dest(gulpConf.dist + '/scripts/'));
-});
-
-
-
-/***
-    BUILD & WATCH
-***/
-gulp.task('demo', ['clean-demo', 'sass-demo', 'js-demo', 'html-demo']);
-
-gulp.task('watch', function() {
-    var watcher = gulp.watch(gulpConf.src + '/js/*.js', ['js-demo']);
-    watcher.on('change', function(event) {
-        console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
+const cleanDist = (done) => {
+  del(gulpConf.dist)
+    .then((paths) => {
+      console.log('Deleted files and folders:\n', paths.join('\n'));
+      done();
     });
-});
+}
+gulp.task('cleanDist', cleanDist);
+
+
+
+/***
+    DEV SERVER
+***/
+const server = browserSync.create();
+
+const reload = (done) => {
+  server.reload();
+  done();
+}
+
+const serve = (done) => {
+  server.init({
+    server: {
+      baseDir: './dist/'
+    }
+  });
+  done();
+}
+
+
+
+/***
+    BUILD
+***/
+const buildJS = () => {
+  return gulp.src(`${gulpConf.src}/js/*.js`)
+    .pipe(babel({
+      presets: ['@babel/env']
+    }))
+    .pipe(gulp.dest(gulpConf.dist));
+}
+gulp.task('buildJS', buildJS);
+
+const minifyHTML = () => {
+  return gulp.src(`${gulpConf.src}/*.html`)
+    .pipe(htmlmin({ collapseWhitespace: true }))
+    .pipe(gulp.dest(gulpConf.dist));
+}
+gulp.task('minifyHTML', minifyHTML);
+
+
+
+/***
+    TASKS
+***/
+const dev = gulp.series(
+  cleanDist,
+  gulp.parallel(minifyHTML, buildJS),
+  serve,
+);
+gulp.task('dev', dev);
