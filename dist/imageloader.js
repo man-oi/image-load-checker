@@ -167,3 +167,4 @@ Imageloader = function () {
 
   return Imageloader;
 }();
+//# sourceMappingURL=imageloader.js.map

@@ -51,11 +51,13 @@ const serve = (done) => {
     BUILD
 ***/
 const buildJS = () => {
-  return gulp.src(`${gulpConf.src}/js/*.js`)
+  return gulp.src(`${gulpConf.src}/js/*.js`, {
+    sourcemaps: true
+  })
     .pipe(babel({
       presets: ['@babel/env']
     }))
-    .pipe(gulp.dest(gulpConf.dist));
+    .pipe(gulp.dest(gulpConf.dist, { sourcemaps: '.' }));
 }
 gulp.task('buildJS', buildJS);
 
@@ -69,11 +71,17 @@ gulp.task('minifyHTML', minifyHTML);
 
 
 /***
-    TASKS
+    WATCH & TASKS
 ***/
+const watch = () => {
+  gulp.watch(`${gulpConf.src}/*.html`, gulp.series(minifyHTML, reload));
+  gulp.watch(`${gulpConf.src}/js/*.js`, gulp.series(buildJS, reload));
+}
+
 const dev = gulp.series(
   cleanDist,
   gulp.parallel(minifyHTML, buildJS),
   serve,
+  watch,
 );
 gulp.task('dev', dev);

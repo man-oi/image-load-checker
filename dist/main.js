@@ -26,3 +26,4 @@ Imageloader({
   },
   timeoutTime: 2000
 });
+//# sourceMappingURL=main.js.map
