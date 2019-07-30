@@ -1,4 +1,4 @@
-var Imageloader = window.Imageloader || {};
+let Imageloader = window.Imageloader || {};
 
 Imageloader = (function() {
     'use strict'
