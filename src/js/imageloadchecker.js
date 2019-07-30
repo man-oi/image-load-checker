@@ -1,6 +1,4 @@
-let Imageloader = window.Imageloader || {};
-
-Imageloader = (function() {
+const ImageLoadChecker = (function() {
     'use strict'
 
     function Imageloader(options) {

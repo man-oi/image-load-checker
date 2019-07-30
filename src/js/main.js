@@ -13,7 +13,7 @@
 // imgLoader.init();
 
 
-Imageloader({
+ImageLoadChecker({
     imageLoaded: function(element) {
         element.parentNode.classList.add('loaded');
     },

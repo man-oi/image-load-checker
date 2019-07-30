@@ -55,7 +55,10 @@ const buildJS = () => {
     sourcemaps: true
   })
     .pipe(babel({
-      presets: ['@babel/env']
+      presets: [
+        ['@babel/env'],
+        ['minify']
+      ]
     }))
     .pipe(gulp.dest(gulpConf.dist, { sourcemaps: '.' }));
 }
@@ -85,3 +88,10 @@ const dev = gulp.series(
   watch,
 );
 gulp.task('dev', dev);
+
+const build = gulp.series(
+  cleanDist,
+  gulp.parallel(minifyHTML, buildJS),
+)
+gulp.task('build', build);
+gulp.task('default', build);
