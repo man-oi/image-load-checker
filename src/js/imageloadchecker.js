@@ -1,26 +1,26 @@
-var Imageloader = window.Imageloader || {};
-
-Imageloader = (function() {
+const ImageLoadChecker = (() => {
     'use strict'
 
-    function Imageloader(options) {
-        var _ =  {};
+    return function (options) {
+        const _ =  {};
         _.defaults = {
             imageSelector: 'img',
             timeoutTime: 1000 * 60,
-            imageLoaded: function(element) {
+            imageLoaded(element) {
                 element.classList.add('loaded');
             },
-            imageLoadedAfterTimeout: function(element) {
+            imageLoadedAfterTimeout(element) {
                 element.classList.add('loaded');
             },
-            imageError: function(element) {
+            imageError(element) {
                 element.classList.add('error');
             },
-            imageErrorAfterTimeout: function(element) {
+            imageErrorAfterTimeout(element) {
                 element.classList.add('error');
             },
-            imageTimeout: function(element) {}
+            imageTimeout(element) {
+              element.classList.add('loaded-timeout');
+            }
         };
         _.options = {};
         _.imageElements = null;
@@ -44,13 +44,13 @@ Imageloader = (function() {
         }
 
         _.bindEvents = function() {
-            var event = document.createEvent("HTMLEvents");
+            const event = document.createEvent("HTMLEvents");
 
-            for (var i = 0; i < _.imageElements.length; i++) {
+            for (let i = 0; i < _.imageElements.length; i++) {
                 _.imageElements[i].addEventListener('load', _.loaded);
                 _.imageElements[i].addEventListener('error', _.error);
 
-                _.timeoutFunctions[i] = window.setTimeout(function(i) {
+                _.timeoutFunctions[i] = window.setTimeout((i) => {
                     _.timeout(_.imageElements[i])
                 }, _.options.timeoutTime, i);
                 _.timeouts[i] = false;
@@ -101,8 +101,8 @@ Imageloader = (function() {
         },
 
         _.error = function(e) {
-            var element = e.target;
-            var key = Array.prototype.slice.call(_.imageElements).indexOf(element);
+            const element = e.target;
+            const key = Array.prototype.slice.call(_.imageElements).indexOf(element);
 
             window.clearTimeout(_.timeoutFunctions[key]);
             element.removeEventListener('error', _.error);
@@ -126,7 +126,7 @@ Imageloader = (function() {
         }
 
         _.timeout = function(element) {
-            var key = Array.prototype.slice.call(_.imageElements).indexOf(element);
+            const key = Array.prototype.slice.call(_.imageElements).indexOf(element);
 
             _.timeouts[key] = true;
             _.timeoutImages++;
@@ -179,6 +179,4 @@ Imageloader = (function() {
 
         _.init();
     }
-
-    return Imageloader;
 })();
